@@ -5,7 +5,6 @@ local selectedObjectIndex = 1
 
 ESX = nil
 if Config.UsageMode == "ESX_Job" then
-    print("ESX MODE ON")
     TriggerEvent('esx:getSharedObject', function(obj)
         ESX = obj
     end)
@@ -73,7 +72,6 @@ Citizen.CreateThread(function()
 
                 for k, v in pairs(Config.Objects) do
                     if v.Displayname == object then
-                        print(v.Object)
                         local objectname = v.Object
                         RequestModel(objectname)
                         while not HasModelLoaded(objectname) do
@@ -114,7 +112,6 @@ Citizen.CreateThread(function()
             if IsControlJustReleased(0, Config.ActivationKey) and GetLastInputMethod(0) then
 
                 if Config.UsageMode == "ESX_Job" then
-                    print(ESX.PlayerData.job.name)
                     if inArray(ESX.PlayerData.job.name, Config.WhitelistedJobs) then
                         WarMenu.OpenMenu('mainmenu')
                     else
