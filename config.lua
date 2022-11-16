@@ -178,7 +178,10 @@ Config.Objects = {
     { Displayname = "Type-III Detour (Left w/ lights)", Object =  "prop_barrier_work04e" },
     { Displayname = "Type-III Detour (Right w/ lights)", Object =  "prop_barrier_work04er" },
     { Displayname = "Left Arrow Board", Object =  "prop_trafficdiv_01" },
-    { Displayname = "Right Arrow Board", Object =  "prop_trafficdiv_02" }
+    { Displayname = "Right Arrow Board", Object =  "prop_trafficdiv_02" },
+    { Displayname = "Arrow Barrier", Object = "prop_mp_arrow_barrier_01"},
+    { Displayname = "Barricade Stone", Object = "prop_barier_conc_05a"},
+    { Displayname = "Barricade Stone 2", Object = "prop_barier_conc_05b"}
 
     ---------------------------------------------------------------
     ---------------------- Add more below! ------------------------
