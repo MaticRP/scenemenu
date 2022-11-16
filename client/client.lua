@@ -3,6 +3,8 @@ local GlobalData = ""
 local currentObjectIndex = 1
 local selectedObjectIndex = 1
 
+local localObjects = {}
+
 ESX = nil
 if Config.UsageMode == "ESX_Job" then
     TriggerEvent('esx:getSharedObject', function(obj)
@@ -15,6 +17,55 @@ if Config.UsageMode == "ESX_Job" then
         ESX.PlayerData.job = job
     end)
 end
+
+TriggerServerEvent('scenemenu:getProps')
+
+RegisterNetEvent('scenemenu:addPropsOnPlayer')
+AddEventHandler('scenemenu:addPropsOnPlayer', function(props)
+    for i in pairs(props) do
+        Citizen.Wait(100)
+        TriggerEvent('scenemenu:addPropOnPlayer', props[i])
+    end
+end);
+RegisterNetEvent('scenemenu:addPropOnPlayer')
+AddEventHandler('scenemenu:addPropOnPlayer', function(prop)
+    local x, y, z, w = table.unpack(prop.vector)
+
+    RequestModel(prop.objectName)
+    while not HasModelLoaded(prop.objectName) do
+        Citizen.Wait(1)
+    end
+    local hash = GetHashKey(prop.objectName);
+
+    if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
+        return
+    end
+
+    local obj = CreateObject(hash, x, y, z, false, false);
+    if(obj == 0) then
+    else
+        table.insert(localObjects, { id = prop.id, object = obj, objectName = prop.objectName })
+        PlaceObjectOnGroundProperly(obj)
+        SetEntityHeading(obj, w)
+        FreezeEntityPosition(obj, true)
+    end
+end)
+RegisterNetEvent('scenemenu:removePropOnPlayer')
+AddEventHandler('scenemenu:removePropOnPlayer', function(prop)
+    for k, v in pairs(localObjects) do
+        if v.id == prop.id then
+            table.remove(localObjects, k)
+            DeleteObject(v.object)
+        end
+    end
+end)
+
+RegisterNetEvent('onResourceStop')
+AddEventHandler('onResourceStop', function (resourceName)
+    for k, v in pairs(localObjects) do
+        DeleteObject(v.object)
+    end
+end)
 
 Citizen.CreateThread(function()
 
@@ -72,15 +123,7 @@ Citizen.CreateThread(function()
 
                 for k, v in pairs(Config.Objects) do
                     if v.Displayname == object then
-                        local objectname = v.Object
-                        RequestModel(objectname)
-                        while not HasModelLoaded(objectname) do
-                            Citizen.Wait(1)
-                        end
-                        local obj = CreateObject(GetHashKey(objectname), x, y, z, true, false);
-                        PlaceObjectOnGroundProperly(obj)
-                        SetEntityHeading(obj, heading)
-                        FreezeEntityPosition(obj, true)
+                        TriggerServerEvent('scenemenu:addProp', vector4(x, y, z, heading), v.Object)
                     end
                 end
 
@@ -94,7 +137,13 @@ Citizen.CreateThread(function()
                     local hash = GetHashKey(v.Object)
                     if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
                         local object = GetClosestObjectOfType(x, y, z, 0.9, hash, false, false, false)
-                        DeleteObject(object)
+                        local vector = GetEntityCoords(object)
+
+                        for k1, v1 in pairs(localObjects) do
+                            if v1.object == object then
+                                TriggerServerEvent('scenemenu:removeProp', v1.id, vector, v.Object)
+                            end
+                        end
                     end
 
                 end

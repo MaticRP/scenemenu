@@ -1,3 +1,11 @@
+currentObjects = {};
+
+ESX = nil
+TriggerEvent('esx:getSharedObject', function(obj)
+    ESX = obj
+end)
+
+
 RegisterServerEvent('Disable')
 AddEventHandler('Disable', function(blip)
     TriggerClientEvent('RemoveBlip', -1)
@@ -20,3 +28,52 @@ local identifiers = GetPlayerIdentifiers(source)
         end
     end
 end)
+
+
+MySQL.query('SELECT * FROM scenemenu', {}, function(result)
+    if result then
+        for i = 1, #result do
+            local row = result[i]
+            vector = vector4(row.x, row.y, row.z, row.heading);
+            table.insert(currentObjects, {id = row.id, vector = vector, objectName = row.objectName})
+        end
+    end
+end)
+
+RegisterServerEvent('scenemenu:getProps')
+AddEventHandler('scenemenu:getProps', function()
+    TriggerClientEvent('scenemenu:addPropsOnPlayer', source, currentObjects)
+end)
+
+
+RegisterNetEvent('scenemenu:addProp')
+AddEventHandler('scenemenu:addProp', function(vector, objectName)
+    local x, y, z, w = table.unpack(vector)
+
+
+    local id = MySQL.insert.await('INSERT INTO scenemenu (x, y, z, heading, objectName) VALUES (?, ?, ?, ?, ?)', {x, y, z, w, objectName});
+
+    TriggerClientEvent("scenemenu:addPropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
+end);
+
+RegisterNetEvent('scenemenu:removeProp')
+AddEventHandler('scenemenu:removeProp', function(id, vector, objectName)
+    local x, y, z = table.unpack(vector)
+
+    MySQL.insert.await('DELETE FROM scenemenu WHERE id = ? AND objectName = ?', {id, objectName})
+
+    TriggerClientEvent("scenemenu:removePropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
+end);
+
+function getPlayerID(source)
+    local identifiers = GetPlayerIdentifiers(source)
+    local player = getIdentifiant(identifiers)
+    return player
+end
+-- gets the actual player id unique to the player,
+-- independent of whether the player changes their screen name
+function getIdentifiant(id)
+    for _, v in ipairs(id) do
+        return v
+    end
+end

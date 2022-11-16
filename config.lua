@@ -59,7 +59,7 @@ USED WITH 'Jobs' MODE!
 ]]--
 
 Config.WhitelistedJobs = {
-    "lsmd",
+    "lsmd", "police", "lspd"
 }
 
 

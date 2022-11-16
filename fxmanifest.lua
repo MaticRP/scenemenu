@@ -13,6 +13,6 @@ client_scripts {
 }
 
 server_scripts {
-    'server/server.lua',
-    'server/versioncheck.lua'
+    '@oxmysql/lib/MySQL.lua',
+    'server/server.lua'
 }
