@@ -73,22 +73,16 @@ To add an object, simply follow the below template and add it between the dashed
 
 ]]--
 Config.Objects = {
-    { Displayname = "Police Barrier", Object = "prop_barrier_work05" },
-    { Displayname = "Big Cone", Object = "prop_roadcone01a" },
-    { Displayname = "Small Cone", Object = "prop_roadcone02b" },
     { Displayname = "Gazebo", Object = "prop_gazebo_02" },
-    { Displayname = "Scene Lights", Object = "prop_worklight_03b" },
+    { Displayname = "Scene Light Small", Object =  "prop_worklight_04d"},
+    { Displayname = "Scene Light", Object =  "prop_worklight_03b" },
 
-    { Displayname = "Small Road Cone", Object =  "prop_roadcone02c", stopPeds = true}, -- 1
-    { Displayname = "Large Road Cone", Object =  "prop_roadcone01a", stopPeds = true}, -- 2
-    { Displayname = "Road Closed", Object =  "prop_barrier_work05", stopPeds = true}, -- 3
-    { Displayname = "Scene Light", Object =  "prop_worklight_04d", stopPeds = false}, -- 4
     { Displayname = "Flagger Paddle", Object =  "prop_flagger_sign_01" },
-    { Displayname = "Scene Lights", Object =  "prop_worklight_03b" },
     { Displayname = "Large Striped Cone", Object =  "prop_roadcone01a" },
     { Displayname = "Large Cone", Object =  "prop_roadcone01c" },
     { Displayname = "Medium Striped Cone", Object =  "prop_roadcone02a" },
     { Displayname = "Medium Cone", Object =  "prop_roadcone02c" },
+    { Displayname = "Small Cone", Object = "prop_roadcone02b" },
     { Displayname = "Delineator", Object =  "prop_mp_cone_04" },
     { Displayname = "Road Work Flag", Object =  "prop_consign_flag_01" },
     { Displayname = "Work Crew Flag", Object =  "prop_consign_flag_21" },
