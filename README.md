@@ -9,10 +9,8 @@ With massive configuration support, you can easily add objects and manage who ca
 
 - Object Spawner
 - Working scene lights.
-- AI Traffic Controller (Change the speed of traffic within a radius)
 - Full Configuration support
 - Whitelisting
-- Synced/Networked Traffic Management
 
 ## Bugs/Issues:
 
