@@ -4,13 +4,13 @@ local currentObjectIndex = 1
 local selectedObjectIndex = 1
 
 local localObjects = {}
+local resourcePropsLoaded = false
 
 ESX = nil
 if Config.UsageMode == "ESX_Job" then
     TriggerEvent('esx:getSharedObject', function(obj)
         ESX = obj
     end)
-
     ESX.PlayerData = ESX.GetPlayerData()
     RegisterNetEvent('esx:setJob')
     AddEventHandler('esx:setJob', function(job)
@@ -18,10 +18,24 @@ if Config.UsageMode == "ESX_Job" then
     end)
 end
 
-TriggerServerEvent('scenemenu:getProps')
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(xPlayer)
+    TriggerServerEvent('scenemenu:getProps')
+    resourcePropsLoaded = true;
+    ESX.PlayerData = ESX.GetPlayerData()
+end)
+
+RegisterNetEvent('onResourceStart')
+AddEventHandler('onResourceStart', function (resourceName)
+    if resourcePropsLoaded == false then
+        resourcePropsLoaded = true;
+        TriggerServerEvent('scenemenu:getProps')
+    end
+end)
 
 RegisterNetEvent('scenemenu:addPropsOnPlayer')
 AddEventHandler('scenemenu:addPropsOnPlayer', function(props)
+    Citizen.Wait(1000)
     for i in pairs(props) do
         Citizen.Wait(100)
         TriggerEvent('scenemenu:addPropOnPlayer', props[i])
@@ -120,13 +134,12 @@ Citizen.CreateThread(function()
                 local heading = GetEntityHeading(Player)
                 local x, y, z = table.unpack(GetEntityCoords(Player, true))
                 local object = objects[selectedObjectIndex]
-
-                for k, v in pairs(Config.Objects) do
-                    if v.Displayname == object then
-                        TriggerServerEvent('scenemenu:addProp', vector4(x, y, z, heading), v.Object)
-                    end
+                local hash = GetHashKey(Config.Objects[selectedObjectIndex].Object);
+                if not DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
+                    TriggerServerEvent('scenemenu:addProp', vector4(x, y, z, heading), Config.Objects[selectedObjectIndex].Object)
                 end
 
+                Citizen.Wait(100);
 
             elseif WarMenu.Button('Delete', 'Nearest') then
 
@@ -136,7 +149,7 @@ Citizen.CreateThread(function()
 
                     local hash = GetHashKey(v.Object)
                     if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
-                        local object = GetClosestObjectOfType(x, y, z, 0.9, hash, false, false, false)
+                        local object = GetClosestObjectOfType(x, y, z, 0.9, hash, false, true, true)
                         local vector = GetEntityCoords(object)
 
                         for k1, v1 in pairs(localObjects) do
@@ -147,9 +160,9 @@ Citizen.CreateThread(function()
                     end
 
                 end
+                Citizen.Wait(100);
 
             end
-
             WarMenu.Display()
         end
 
@@ -161,7 +174,7 @@ Citizen.CreateThread(function()
             if IsControlJustReleased(0, Config.ActivationKey) and GetLastInputMethod(0) then
 
                 if Config.UsageMode == "ESX_Job" then
-                    if inArray(ESX.PlayerData.job.name, Config.WhitelistedJobs) then
+                    if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
                         WarMenu.OpenMenu('mainmenu')
                     else
                         ShowNotification("^1You are not in the correct Job to use this.")
@@ -205,7 +218,7 @@ Citizen.CreateThread(function()
 
                 if Config.UsageMode == "ESX_Job" then
 
-                    if inArray(ESX.PlayerData.job.name, Config.WhitelistedJobs) then
+                    if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
                         WarMenu.OpenMenu('mainmenu')
                     else
                         ShowNotification("^1You are not in the correct ped to use this.")

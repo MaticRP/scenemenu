@@ -50,8 +50,8 @@ RegisterNetEvent('scenemenu:addProp')
 AddEventHandler('scenemenu:addProp', function(vector, objectName)
     local x, y, z, w = table.unpack(vector)
 
-
     local id = MySQL.insert.await('INSERT INTO scenemenu (x, y, z, heading, objectName) VALUES (?, ?, ?, ?, ?)', {x, y, z, w, objectName});
+    table.insert(currentObjects, {id = id, vector = vector, objectName = objectName})
 
     TriggerClientEvent("scenemenu:addPropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
 end);
@@ -61,7 +61,7 @@ AddEventHandler('scenemenu:removeProp', function(id, vector, objectName)
     local x, y, z = table.unpack(vector)
 
     MySQL.insert.await('DELETE FROM scenemenu WHERE id = ? AND objectName = ?', {id, objectName})
-
+    table.insert(currentObjects, id);
     TriggerClientEvent("scenemenu:removePropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
 end);
 
