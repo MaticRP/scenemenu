@@ -58,10 +58,12 @@ end);
 
 RegisterNetEvent('scenemenu:removeProp')
 AddEventHandler('scenemenu:removeProp', function(id, vector, objectName)
-    local x, y, z = table.unpack(vector)
-
-    MySQL.insert.await('DELETE FROM scenemenu WHERE id = ? AND objectName = ?', {id, objectName})
-    table.insert(currentObjects, id);
+    MySQL.insert.await('DELETE FROM scenemenu WHERE id = ?', {id})
+    for k, v in pairs(currentObjects) do
+        if v.id == id then
+            table.remove(currentObjects, k)
+        end
+    end
     TriggerClientEvent("scenemenu:removePropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
 end);
 

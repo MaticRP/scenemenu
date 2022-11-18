@@ -142,23 +142,14 @@ Citizen.CreateThread(function()
                 Citizen.Wait(100);
 
             elseif WarMenu.Button('Delete', 'Nearest') then
-
                 local x, y, z = table.unpack(GetEntityCoords(PlayerPedId(), true))
 
-                for k, v in pairs(Config.Objects) do
-
-                    local hash = GetHashKey(v.Object)
+                for k, v in pairs(localObjects) do
+                    local hash = GetHashKey(v.objectName)
                     if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
-                        local object = GetClosestObjectOfType(x, y, z, 0.9, hash, false, true, true)
-                        local vector = GetEntityCoords(object)
-
-                        for k1, v1 in pairs(localObjects) do
-                            if v1.object == object then
-                                TriggerServerEvent('scenemenu:removeProp', v1.id, vector, v.Object)
-                            end
-                        end
+                        TriggerServerEvent('scenemenu:removeProp', v.id, vector, v.obj)
+                        break;
                     end
-
                 end
                 Citizen.Wait(100);
 
@@ -174,54 +165,60 @@ Citizen.CreateThread(function()
             if IsControlJustReleased(0, Config.ActivationKey) and GetLastInputMethod(0) then
 
                 if Config.UsageMode == "ESX_Job" then
-                    if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
-                        WarMenu.OpenMenu('mainmenu')
+                    if ESX.GetPlayerData().job == nil then
+                        ShowNotification("^1You are not in the correct Job to use this. 1")
                     else
-                        ShowNotification("^1You are not in the correct Job to use this.")
+                        if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
+                            WarMenu.OpenMenu('mainmenu')
+                        else
+                            ShowNotification("^1You are not in the correct Job to use this.")
+                        end
                     end
                 elseif Config.UsageMode == "Ped" then
-
                     pmodel = GetEntityModel(PlayerPedId())
                     if inArrayPed(pmodel, Config.WhitelistedPeds) then
-                        WarMenu.OpenMenu('mainmenu')
+                    WarMenu.OpenMenu('mainmenu')
                     else
-                        ShowNotification("^1You are not in the correct ped to use this.")
+                    ShowNotification("^1You are not in the correct ped to use this.")
                     end
-                elseif Config.UsageMode == "IP" then
+                    elseif Config.UsageMode == "IP" then
 
                     TriggerServerEvent("GetData", "IP")
                     Wait(100)
                     if inArray(GlobalData, Config.WhitelistedIPs) then
-                        WarMenu.OpenMenu('mainmenu')
+                    WarMenu.OpenMenu('mainmenu')
                     else
-                        ShowNotification("^1You are not whitelisted to use this.")
+                    ShowNotification("^1You are not whitelisted to use this.")
                     end
-                elseif Config.UsageMode == "Steam" then
+                    elseif Config.UsageMode == "Steam" then
 
                     TriggerServerEvent("GetData", "Steam")
                     Wait(100)
                     if inArraySteam(GlobalData, Config.WhitelistedSteam) then
-                        WarMenu.OpenMenu('mainmenu')
+                    WarMenu.OpenMenu('mainmenu')
                     else
-                        ShowNotification("^1You are not whitelisted to use this.")
+                    ShowNotification("^1You are not whitelisted to use this.")
                     end
 
-                elseif Config.UsageMode == "Everyone" then
-                    WarMenu.OpenMenu('mainmenu')
-                end
+                    elseif Config.UsageMode == "Everyone" then
+                        WarMenu.OpenMenu('mainmenu')
+                        end
 
-            end
+                end
 
         elseif Config.ActivationMode == "Command" then
 
             RegisterCommand(Config.ActivationCommand, function(source, args, rawCommand)
 
                 if Config.UsageMode == "ESX_Job" then
-
-                    if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
-                        WarMenu.OpenMenu('mainmenu')
+                    if not ESX.GetPlayerData().job == nil then
+                        if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
+                            WarMenu.OpenMenu('mainmenu')
+                        else
+                            ShowNotification("^1You are not in the correct ped to use this.")
+                        end
                     else
-                        ShowNotification("^1You are not in the correct ped to use this.")
+                        ShowNotification("^1You are not in the correct Job to use this.")
                     end
                 elseif Config.UsageMode == "Ped" then
 
