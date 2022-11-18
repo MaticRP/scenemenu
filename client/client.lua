@@ -92,7 +92,7 @@ Citizen.CreateThread(function()
     WarMenu.SetTitleBackgroundColor('objectsub', 60, 137, 214, 255)
     WarMenu.SetMenuTextColor('objectsub', 60, 137, 214, 255)
 
-  -- Close Menu
+    -- Close Menu
     WarMenu.CreateSubMenu('close', 'mainmenu', 'Close')
     WarMenu.SetTitleBackgroundColor('close', 60, 137, 214, 255)
     WarMenu.SetMenuTextColor('close', 60, 137, 214, 255)
@@ -111,51 +111,51 @@ Citizen.CreateThread(function()
             WarMenu.Display()
 
         end if WarMenu.IsMenuOpened('close') then
-            WarMenu.CloseMenu()
-        elseif WarMenu.IsMenuOpened('objectsub') then
+        WarMenu.CloseMenu()
+    elseif WarMenu.IsMenuOpened('objectsub') then
 
 
-            local objects = { }
+        local objects = { }
 
-            for k, v in pairs(Config.Objects) do
-                for k, v in pairs(v) do
-                    if k == "Displayname" then
-                        table.insert(objects, v)
-                    end
+        for k, v in pairs(Config.Objects) do
+            for k, v in pairs(v) do
+                if k == "Displayname" then
+                    table.insert(objects, v)
                 end
             end
-
-            if WarMenu.ComboBox('Object', objects, currentObjectIndex, selectedObjectIndex, function(currentIndex, selectedIndex)
-                currentObjectIndex = currentIndex
-                selectedObjectIndex = selectedIndex
-            end) then
-
-                local Player = GetPlayerPed(-1)
-                local heading = GetEntityHeading(Player)
-                local x, y, z = table.unpack(GetEntityCoords(Player, true))
-                local object = objects[selectedObjectIndex]
-                local hash = GetHashKey(Config.Objects[selectedObjectIndex].Object);
-                if not DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
-                    TriggerServerEvent('scenemenu:addProp', vector4(x, y, z, heading), Config.Objects[selectedObjectIndex].Object)
-                end
-
-                Citizen.Wait(100);
-
-            elseif WarMenu.Button('Delete', 'Nearest') then
-                local x, y, z = table.unpack(GetEntityCoords(PlayerPedId(), true))
-
-                for k, v in pairs(localObjects) do
-                    local hash = GetHashKey(v.objectName)
-                    if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
-                        TriggerServerEvent('scenemenu:removeProp', v.id, vector, v.obj)
-                        break;
-                    end
-                end
-                Citizen.Wait(100);
-
-            end
-            WarMenu.Display()
         end
+
+        if WarMenu.ComboBox('Object', objects, currentObjectIndex, selectedObjectIndex, function(currentIndex, selectedIndex)
+            currentObjectIndex = currentIndex
+            selectedObjectIndex = selectedIndex
+        end) then
+
+            local Player = GetPlayerPed(-1)
+            local heading = GetEntityHeading(Player)
+            local x, y, z = table.unpack(GetEntityCoords(Player, true))
+            local object = objects[selectedObjectIndex]
+            local hash = GetHashKey(Config.Objects[selectedObjectIndex].Object);
+            if not DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
+                TriggerServerEvent('scenemenu:addProp', vector4(x, y, z, heading), Config.Objects[selectedObjectIndex].Object)
+            end
+
+            Citizen.Wait(100);
+
+        elseif WarMenu.Button('Delete', 'Nearest') then
+            local x, y, z = table.unpack(GetEntityCoords(PlayerPedId(), true))
+
+            for k, v in pairs(localObjects) do
+                local hash = GetHashKey(v.objectName)
+                if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
+                    TriggerServerEvent('scenemenu:removeProp', v.id, vector, v.obj)
+                    break;
+                end
+            end
+            Citizen.Wait(100);
+
+        end
+        WarMenu.Display()
+    end
 
 
         --[[ Menu Opening Functions ]]--
@@ -177,34 +177,34 @@ Citizen.CreateThread(function()
                 elseif Config.UsageMode == "Ped" then
                     pmodel = GetEntityModel(PlayerPedId())
                     if inArrayPed(pmodel, Config.WhitelistedPeds) then
-                    WarMenu.OpenMenu('mainmenu')
+                        WarMenu.OpenMenu('mainmenu')
                     else
-                    ShowNotification("^1You are not in the correct ped to use this.")
+                        ShowNotification("^1You are not in the correct ped to use this.")
                     end
-                    elseif Config.UsageMode == "IP" then
+                elseif Config.UsageMode == "IP" then
 
                     TriggerServerEvent("GetData", "IP")
                     Wait(100)
                     if inArray(GlobalData, Config.WhitelistedIPs) then
-                    WarMenu.OpenMenu('mainmenu')
+                        WarMenu.OpenMenu('mainmenu')
                     else
-                    ShowNotification("^1You are not whitelisted to use this.")
+                        ShowNotification("^1You are not whitelisted to use this.")
                     end
-                    elseif Config.UsageMode == "Steam" then
+                elseif Config.UsageMode == "Steam" then
 
                     TriggerServerEvent("GetData", "Steam")
                     Wait(100)
                     if inArraySteam(GlobalData, Config.WhitelistedSteam) then
-                    WarMenu.OpenMenu('mainmenu')
+                        WarMenu.OpenMenu('mainmenu')
                     else
-                    ShowNotification("^1You are not whitelisted to use this.")
+                        ShowNotification("^1You are not whitelisted to use this.")
                     end
 
-                    elseif Config.UsageMode == "Everyone" then
-                        WarMenu.OpenMenu('mainmenu')
-                        end
-
+                elseif Config.UsageMode == "Everyone" then
+                    WarMenu.OpenMenu('mainmenu')
                 end
+
+            end
 
         elseif Config.ActivationMode == "Command" then
 
