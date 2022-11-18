@@ -211,14 +211,14 @@ Citizen.CreateThread(function()
             RegisterCommand(Config.ActivationCommand, function(source, args, rawCommand)
 
                 if Config.UsageMode == "ESX_Job" then
-                    if not ESX.GetPlayerData().job == nil then
+                    if ESX.GetPlayerData().job == nil then
+                        ShowNotification("^1You are not in the correct Job to use this.")
+                    else
                         if inArray(ESX.GetPlayerData().job.name, Config.WhitelistedJobs) then
                             WarMenu.OpenMenu('mainmenu')
                         else
-                            ShowNotification("^1You are not in the correct ped to use this.")
+                            ShowNotification("^1You are not in the correct Job to use this.")
                         end
-                    else
-                        ShowNotification("^1You are not in the correct Job to use this.")
                     end
                 elseif Config.UsageMode == "Ped" then
 
