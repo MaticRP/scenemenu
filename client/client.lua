@@ -31,7 +31,7 @@ end);
 RegisterNetEvent('scenemenu:selfCheck')
 AddEventHandler('scenemenu:selfCheck', function(props)
     for i in pairs(props) do
-        object = getObjectById(props[i].id)
+        object = getObjectById(localObjects, props[i].id)
         if object == nil then
             TriggerEvent('scenemenu:addPropOnPlayer', props[i])
         elseif not DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, GetHashKey(props[i].objectName), true) then
@@ -39,12 +39,22 @@ AddEventHandler('scenemenu:selfCheck', function(props)
             TriggerEvent('scenemenu:addPropOnPlayer', props[i])
         end
     end
+
+    for k, v in pairs(localObjects) do
+        object = getObjectById(props, v.id)
+        if object == nil then
+            TriggerEvent('scenemenu:removePropOnPlayer', v)
+        end
+    end
+
+
+
 end);
 
-function getObjectById(id)
-    for i in pairs(localObjects) do
-        if localObjects[i].id == id then
-            return localObjects[i]
+function getObjectById(propList, id)
+    for i in pairs(propList) do
+        if propList[i].id == id then
+            return propList[i]
         end
     end
     return nil;
