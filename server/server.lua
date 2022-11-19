@@ -40,11 +40,19 @@ MySQL.query('SELECT * FROM scenemenu', {}, function(result)
     end
 end)
 
+RegisterServerEvent('scenemenu:startSelfCheck')
+AddEventHandler('scenemenu:startSelfCheck', function()
+    TriggerClientEvent('scenemenu:selfCheck', source, currentObjects)
+end)
+
 RegisterServerEvent('scenemenu:getProps')
 AddEventHandler('scenemenu:getProps', function()
     TriggerClientEvent('scenemenu:addPropsOnPlayer', source, currentObjects)
 end)
 
+RegisterServerEvent('scenemenu:getPropsList')
+AddEventHandler('scenemenu:getPropsList', function()
+end)
 
 RegisterNetEvent('scenemenu:addProp')
 AddEventHandler('scenemenu:addProp', function(vector, objectName)
@@ -57,14 +65,14 @@ AddEventHandler('scenemenu:addProp', function(vector, objectName)
 end);
 
 RegisterNetEvent('scenemenu:removeProp')
-AddEventHandler('scenemenu:removeProp', function(id, vector, objectName)
+AddEventHandler('scenemenu:removeProp', function(id, objectName)
     MySQL.insert.await('DELETE FROM scenemenu WHERE id = ?', {id})
     for k, v in pairs(currentObjects) do
         if v.id == id then
             table.remove(currentObjects, k)
         end
     end
-    TriggerClientEvent("scenemenu:removePropOnPlayer", -1, {id = id, vector = vector, objectName = objectName})
+    TriggerClientEvent("scenemenu:removePropOnPlayer", -1, {id = id, objectName = objectName})
 end);
 
 function getPlayerID(source)

@@ -18,6 +18,42 @@ if Config.UsageMode == "ESX_Job" then
     end)
 end
 
+
+
+-- SELF CHECK (All 5 Minutes)
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(30000)
+        TriggerServerEvent('scenemenu:startSelfCheck')
+    end
+end);
+
+RegisterNetEvent('scenemenu:selfCheck')
+AddEventHandler('scenemenu:selfCheck', function(props)
+    for i in pairs(props) do
+        object = getObjectById(props[i].id)
+        if object == nil then
+            TriggerEvent('scenemenu:addPropOnPlayer', props[i])
+        elseif not DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, GetHashKey(props[i].objectName), true) then
+            TriggerEvent('scenemenu:removePropOnPlayer', props[i])
+            TriggerEvent('scenemenu:addPropOnPlayer', props[i])
+        end
+    end
+end);
+
+function getObjectById(id)
+    for i in pairs(localObjects) do
+        if localObjects[i].id == id then
+            return localObjects[i]
+        end
+    end
+    return nil;
+end
+
+
+
+
+
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
     TriggerServerEvent('scenemenu:getProps')
@@ -33,13 +69,15 @@ AddEventHandler('onResourceStart', function (resourceName)
     end
 end)
 
+
+
 RegisterNetEvent('scenemenu:addPropsOnPlayer')
 AddEventHandler('scenemenu:addPropsOnPlayer', function(props)
-    Citizen.Wait(1000)
     for i in pairs(props) do
-        Citizen.Wait(100)
         TriggerEvent('scenemenu:addPropOnPlayer', props[i])
     end
+    Citizen.Wait(5000)
+    TriggerServerEvent('scenemenu:startSelfCheck')
 end);
 RegisterNetEvent('scenemenu:addPropOnPlayer')
 AddEventHandler('scenemenu:addPropOnPlayer', function(prop)
@@ -55,7 +93,7 @@ AddEventHandler('scenemenu:addPropOnPlayer', function(prop)
         return
     end
 
-    local obj = CreateObject(hash, x, y, z, false, false);
+    local obj = CreateObject(hash, x, y, z, false, true);
     if(obj == 0) then
     else
         table.insert(localObjects, { id = prop.id, object = obj, objectName = prop.objectName })
@@ -79,6 +117,7 @@ AddEventHandler('onResourceStop', function (resourceName)
     for k, v in pairs(localObjects) do
         DeleteObject(v.object)
     end
+    resourcePropsLoaded = false
 end)
 
 Citizen.CreateThread(function()
@@ -147,8 +186,10 @@ Citizen.CreateThread(function()
             for k, v in pairs(localObjects) do
                 local hash = GetHashKey(v.objectName)
                 if DoesObjectOfTypeExistAtCoords(x, y, z, 0.9, hash, true) then
-                    TriggerServerEvent('scenemenu:removeProp', v.id, vector, v.obj)
-                    break;
+                    if GetClosestObjectOfType(x, y, z, 0.9, hash, false, false, false) == v.object then
+                        TriggerServerEvent('scenemenu:removeProp', v.id, v.object)
+                        break;
+                    end
                 end
             end
             Citizen.Wait(100);
